@@ -58,7 +58,6 @@ firmware/**/config.h
 # Thesis documentation, drafts, presentations & defense materials (Confidential)
 *.docx
 *.pdf
-docs/
 proposal/
 presentation*.html
 presentation_script*
@@ -67,3 +66,11 @@ GROUP-2-*
 NEW_revised*
 Component.*
 2.docx
+
+# Ignore internal thesis notes/drafts in docs/, but keep public manual & diagrams
+docs/*
+!docs/USER_MANUAL.md
+!docs/system_flowchart.png
+!docs/system_flowchart.svg
+!docs/block_diagram.png
+!docs/block_diagram.svg
