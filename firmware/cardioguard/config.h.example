@@ -1,0 +1,47 @@
+/*
+  CardioGuard AI — Configuration
+  ================================
+  Copy this file to config.h and fill in your values.
+  NEVER commit config.h to git — add it to .gitignore
+
+  How to get each value:
+  - WIFI_SSID      : your WiFi network name
+  - WIFI_PASS      : your WiFi password
+  - CLOUD_API_URL  : your Railway.app / Cloud Run deployment URL
+  - DEVICE_KEY     : any random string (set same value as DEVICE_KEY env var in cloud_api.py)
+  - PATIENT_ID     : unique ID for this device's patient (matches Firebase record)
+  - DEVICE_ID      : unique hardware ID per device (e.g. "cg_001")
+  - GOOGLE_GEO_KEY : Google Geolocation API key for WiFi-based location
+                     How to get it:
+                     1. Go to https://console.cloud.google.com/
+                     2. Create a project → APIs & Services → Enable API
+                     3. Search for "Geolocation API" and enable it
+                     4. Go to Credentials → Create API Key
+                     5. (Optional) Restrict to "Geolocation API" only for security
+
+  NOTE: For production deployment in remote areas with no WiFi,
+  replace WiFi with SIM7080G module (documented in 02-PRD.md and 03-system-archi.md).
+*/
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// WiFi credentials
+#define WIFI_SSID       "YourNetworkName"
+#define WIFI_PASS       "YourPassword"
+
+// Cloud API endpoint (no trailing slash)
+#define CLOUD_API_URL   "https://your-app.railway.app"
+
+// Device authentication
+#define DEVICE_KEY      "changeme_secret_key"
+
+// Patient and device identifiers
+#define PATIENT_ID      "patient_001"
+#define DEVICE_ID       "cg_001"
+
+// Google Geolocation API key (for WiFi-based location — no GPS needed)
+// Get yours at: https://console.cloud.google.com/ → APIs → Geolocation API
+#define GOOGLE_GEO_KEY  "YOUR_GOOGLE_API_KEY_HERE"
+
+#endif // CONFIG_H
