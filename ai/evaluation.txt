@@ -1,0 +1,9 @@
+              precision    recall  f1-score   support
+
+      Normal     0.9474    0.9950    0.9706     12939
+  Arrhythmia     0.9101    0.7232    0.8060      1008
+     At-Risk     1.0000    0.7853    0.8797      2063
+
+    accuracy                         0.9508     16010
+   macro avg     0.9525    0.8345    0.8854     16010
+weighted avg     0.9518    0.9508    0.9485     16010
