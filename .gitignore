@@ -1,0 +1,69 @@
+# Python virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & compiled code
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Private Credentials, Service Accounts & Database Keys (CRITICAL SECURITY)
+*adminsdk*.json
+*credentials*.json
+service-account*.json
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+!.env.*.example
+!firebase_credentials.json.example
+
+# Large Raw and Processed Datasets (Exceeds GitHub limits)
+data/
+mitbih/
+physionet2017/
+
+# AI Models & duplicate binaries
+*.pt
+*.weights
+ai/models/
+bin/
+
+# Dashboard files & Node modules
+dashboard/node_modules/
+dashboard/dist/
+dashboard/.firebase/
+
+# Local OS & editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/
+
+# Temporary / scratch / preview files
+*.log
+docx_extracted.txt
+dashboard-update
+cardioguard_heart_tile.html
+
+# Firmware configs hold WiFi and API credentials — use config.h.example
+firmware/*/config.h
+firmware/**/config.h
+
+# Thesis documentation, drafts, presentations & defense materials (Confidential)
+*.docx
+*.pdf
+docs/
+proposal/
+presentation*.html
+presentation_script*
+defense_*
+GROUP-2-*
+NEW_revised*
+Component.*
+2.docx

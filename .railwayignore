@@ -1,0 +1,25 @@
+dashboard/
+firmware/
+data/
+.venv/
+__pycache__/
+*.md
+*.pdf
+*.html
+*.docx
+*.zip
+*.png
+*.ipynb
+.env*
+.firebaserc
+firebase.json
+firebase-debug.log
+download_*.py
+train.py
+export_onnx.py
+preprocess.py
+node_modules/
+
+# API deploy: skip large training artifacts (API only needs the .onnx)
+*.keras
+bin/
