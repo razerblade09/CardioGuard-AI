@@ -1,0 +1,13 @@
+participant_id,age,sex,session,cuff_bpm,cardioguard_bpm
+P1,22,F,1,,
+P1,22,F,2,,
+P1,22,F,3,,
+P2,27,M,1,,
+P2,27,M,2,,
+P2,27,M,3,,
+P3,74,F,1,,
+P3,74,F,2,,
+P3,74,F,3,,
+P4,79,M,1,,
+P4,79,M,2,,
+P4,79,M,3,,
