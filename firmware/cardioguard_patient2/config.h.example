@@ -1,0 +1,32 @@
+/*
+  CardioGuard AI — Configuration (Patient 2)
+  ==========================================
+  Dedicated configuration for ESP No. 2.
+
+  Copy this file to config.h and fill in your values.
+  NEVER commit config.h to git — it holds WiFi and API credentials.
+
+  See ../cardioguard/config.h.example for how to obtain each value.
+*/
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// WiFi credentials
+#define WIFI_SSID       "YourNetworkName"
+#define WIFI_PASS       "YourPassword"
+
+// Cloud API endpoint (no trailing slash)
+#define CLOUD_API_URL   "https://your-app.railway.app"
+
+// Device authentication (must match DEVICE_KEY in the cloud API env vars)
+#define DEVICE_KEY      "changeme_secret_key"
+
+// Patient and device identifiers (dedicated to Patient 2)
+#define PATIENT_ID      "patient_002"
+#define DEVICE_ID       "cg_002"
+
+// Google Geolocation API key (for WiFi-based location — no GPS needed)
+#define GOOGLE_GEO_KEY  "YOUR_GOOGLE_API_KEY_HERE"
+
+#endif // CONFIG_H
