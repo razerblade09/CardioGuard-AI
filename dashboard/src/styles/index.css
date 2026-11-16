@@ -1,0 +1,1344 @@
+/* ═══════════════════════════════════════════════════
+   CardioGuard AI — Clinical Precision Design System
+   Medical-grade dark interface
+═══════════════════════════════════════════════════ */
+
+/* ── Design Tokens ────────────────────────────────── */
+:root {
+  --bg-base:       #0B0F1A;
+  --bg-surface:    #111827;
+  --bg-elevated:   #1C2535;
+  --bg-input:      #0E1422;
+
+  --accent:        #E53E3E;
+  --accent-dim:    rgba(229, 62, 62, 0.10);
+  --accent-glow:   rgba(229, 62, 62, 0.25);
+
+  --teal:          #00B5A4;
+  --teal-dim:      rgba(0, 181, 164, 0.10);
+  --teal-glow:     rgba(0, 181, 164, 0.25);
+
+  --green:         #22C55E;
+  --green-dim:     rgba(34, 197, 94, 0.10);
+
+  --red:           #E53E3E;
+  --red-dim:       rgba(229, 62, 62, 0.08);
+
+  --amber:         #F59E0B;
+  --amber-dim:     rgba(245, 158, 11, 0.08);
+
+  --text-primary:  #F0F4F8;
+  --text-secondary:#8896A7;
+  --text-muted:    #4A5568;
+
+  --border:        #1E2D3D;
+  --border-hover:  #2A3F55;
+
+  --radius:        4px;
+  --transition:    150ms ease;
+}
+
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Data Labels (clinical convention) ────────────── */
+.data-label,
+.card-title,
+.form-label,
+.coord-label,
+.patient-select-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ── Page Fade-in ─────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-page,
+  .dashboard-layout {
+    animation: fadeIn 300ms ease forwards;
+  }
+}
+
+/* ── Splash Screen ────────────────────────────────── */
+.splash {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: var(--bg-base);
+}
+.splash-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.splash-icon {
+  font-size: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+}
+.splash-icon::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--teal);
+  border-radius: 50%;
+}
+.splash-text {
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+.splash-spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   LOGIN PAGE — Two-column clinical layout
+═══════════════════════════════════════════════════ */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  background: var(--bg-base);
+}
+
+/* Left panel — branding + ECG waveform */
+.login-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 80px;
+  border-right: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-system-name {
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.login-tagline {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-bottom: 48px;
+  max-width: 380px;
+}
+
+.login-ecg-container {
+  width: 100%;
+  height: 60px;
+  position: relative;
+}
+
+.login-ecg-container svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ecg-waveform-line {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: ecg-draw 4s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes ecg-draw {
+  0%   { stroke-dashoffset: 1200; opacity: 0.5; }
+  50%  { opacity: 0.8; }
+  100% { stroke-dashoffset: 0; opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ecg-waveform-line {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 0.5;
+  }
+}
+
+.login-system-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 12px;
+  margin-top: 48px;
+  width: fit-content;
+}
+
+/* Right panel — login form */
+.login-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 56px;
+  background: var(--bg-surface);
+}
+
+/* Legacy class mapping — the old .login-card wraps the form */
+.login-card {
+  display: contents;
+}
+
+.login-header {
+  margin-bottom: 36px;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.login-brand-icon {
+  font-size: 0;
+  display: none;
+}
+
+.login-brand-name {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.login-title {
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.form-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+.form-input:focus {
+  border-color: var(--teal);
+}
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-login {
+  background: transparent;
+  border: 1px solid var(--teal);
+  border-radius: var(--radius);
+  color: var(--teal);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 12px;
+  margin-top: 8px;
+  transition: background var(--transition), color var(--transition);
+}
+.btn-login:hover:not(:disabled) {
+  background: rgba(0, 181, 164, 0.08);
+}
+.btn-login:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-error {
+  font-size: 13px;
+  color: var(--accent);
+  line-height: 1.4;
+}
+
+.login-footer {
+  margin-top: 32px;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ── Login Responsive ────────────────────────────── */
+@media (max-width: 768px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+  .login-left {
+    padding: 40px 24px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .login-right {
+    padding: 40px 24px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   DASHBOARD — Sidebar + top bar + content grid
+═══════════════════════════════════════════════════ */
+
+/* Layout wrapper */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ──────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+  flex-shrink: 0;
+}
+
+.sidebar-brand-name {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  gap: 2px;
+  flex: 1;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+}
+
+.sidebar-nav-item.active {
+  background: var(--teal-dim);
+  color: var(--teal);
+}
+
+.sidebar-nav-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Top Bar ──────────────────────────────────────── */
+.topbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-base);
+  flex-shrink: 0;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-breadcrumb {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.topbar-breadcrumb span {
+  color: var(--text-muted);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.topbar-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  transition: border-color var(--transition), color var(--transition);
+}
+.btn-logout:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Main Content Area ────────────────────────────── */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg-base);
+}
+
+.dashboard {
+  flex: 1;
+  padding: 20px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+/* ── Navbar (legacy — now used as topbar) ─────────── */
+.navbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.navbar-icon {
+  font-size: 0;
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  background: var(--teal);
+  border-radius: 50%;
+}
+
+.navbar-name {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.navbar-badge {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2px 8px;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.navbar-avatar {
+  width: 28px; height: 28px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ── ECG Header Waveform (system alive indicator) ── */
+.ecg-header-indicator {
+  position: relative;
+  height: 24px;
+  width: 120px;
+  overflow: hidden;
+}
+
+.ecg-header-indicator svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ecg-header-line {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 1.2;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: ecg-header-draw 3s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes ecg-header-draw {
+  0%   { stroke-dashoffset: 400; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ecg-header-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ── Status Bar ───────────────────────────────────── */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.patient-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.patient-select-label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.patient-select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  outline: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.patient-select:focus {
+  border-color: var(--teal);
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 12px;
+  letter-spacing: 0.04em;
+}
+.status-pill.live {
+  background: var(--teal-dim);
+  border: 1px solid rgba(0, 181, 164, 0.3);
+  color: var(--teal);
+}
+.status-pill.offline {
+  background: var(--red-dim);
+  border: 1px solid rgba(229, 62, 62, 0.2);
+  color: var(--accent);
+}
+
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status-dot.pulse {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.status-chip {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 11px;
+  padding: 4px 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Grid Layout ──────────────────────────────────── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 180px 200px;
+  grid-template-rows: auto auto auto;
+  gap: 12px;
+}
+
+.grid-ecg        { grid-column: 1; grid-row: 1; }
+.grid-hr         { grid-column: 2; grid-row: 1; }
+.grid-prediction { grid-column: 3; grid-row: 1; }
+.grid-trend      { grid-column: 1 / 4; grid-row: 2; }
+.grid-alerts     { grid-column: 1 / 2; grid-row: 3; }
+.grid-location   { grid-column: 2 / 4; grid-row: 3; }
+
+/* ── Card Base (clinical panels — thin borders) ──── */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+.card:hover {
+  border-color: var(--border-hover);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-badge {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  background: var(--teal-dim);
+}
+.card-badge.sim {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: var(--amber-dim);
+}
+.card-badge.offline-badge {
+  border-color: var(--border);
+  color: var(--text-muted);
+  background: transparent;
+}
+
+/* ── ECG Chart Panel ──────────────────────────────── */
+.ecg-panel {
+  min-height: 170px;
+  background: #080C15;
+  border-color: var(--border);
+}
+.ecg-panel .card-header { margin-bottom: 8px; }
+
+.ecg-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 130px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #060A12;
+  border: 1px solid rgba(30, 45, 61, 0.5);
+}
+
+/* Subtle ECG grid lines */
+.ecg-canvas-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 181, 164, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 181, 164, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.ecg-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ecg-chart-recharts .recharts-cartesian-grid line {
+  stroke: rgba(0, 181, 164, 0.04);
+}
+
+/* ── HR Card ──────────────────────────────────────── */
+.hr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 16px;
+}
+
+.hr-value {
+  font-size: 44px;
+  font-weight: 300;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.hr-unit {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hr-heart-svg {
+  transform-origin: 50% 50%;
+  animation: heartbeat 0.833s ease-in-out infinite;
+  margin: 4px auto;
+}
+
+@keyframes heartbeat {
+  0%  { transform: scale(1); }
+  15% { transform: scale(1.08); }
+  30% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-heart-svg { animation: none; }
+}
+
+.hr-status-text {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ── Prediction Card ──────────────────────────────── */
+.prediction-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prediction-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prediction-icon { font-size: 20px; }
+
+.prediction-label {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.prediction-sublabel {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.prediction-label.normal     { color: var(--green); }
+.prediction-label.arrhythmia { color: var(--accent); }
+.prediction-label.at-risk    { color: var(--amber); }
+.prediction-label.init       { color: var(--text-muted); }
+
+.confidence-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.confidence-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.confidence-bar-label span:last-child {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.confidence-bar-track {
+  height: 4px;
+  background: var(--bg-input);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidence-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.confidence-bar-fill.normal     { background: var(--green); }
+.confidence-bar-fill.arrhythmia { background: var(--accent); }
+.confidence-bar-fill.at-risk    { background: var(--amber); }
+
+.inference-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 2px;
+}
+
+/* ── HR Trend Panel ───────────────────────────────── */
+.trend-panel { padding: 16px 18px 10px; }
+.trend-chart-wrapper { height: 110px; }
+
+/* ── Alert Feed ───────────────────────────────────── */
+.alert-feed {
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-count-badge {
+  background: var(--red-dim) !important;
+  border-color: rgba(229, 62, 62, 0.3) !important;
+  color: var(--accent) !important;
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.alert-list::-webkit-scrollbar { width: 3px; }
+.alert-list::-webkit-scrollbar-track { background: transparent; }
+.alert-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.alert-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.alert-item:last-child {
+  border-bottom: none;
+}
+.alert-item.unack {
+  border-left: 2px solid;
+}
+.alert-item.ack {
+  opacity: 0.6;
+}
+.alert-item.arrhythmia {
+  background: var(--red-dim);
+}
+.alert-item.arrhythmia.unack { border-left-color: var(--accent); }
+.alert-item.at-risk {
+  background: var(--amber-dim);
+}
+.alert-item.at-risk.unack { border-left-color: var(--amber); }
+.alert-item.normal {
+  background: transparent;
+}
+
+.alert-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-icon { font-size: 14px; flex-shrink: 0; }
+.alert-body { flex: 1; min-width: 0; }
+
+.alert-type {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.alert-hr { font-weight: 400; color: var(--text-secondary); }
+.alert-type.arrhythmia { color: var(--accent); }
+.alert-type.at-risk    { color: var(--amber); }
+.alert-type.normal     { color: var(--green); }
+
+.alert-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-ack-badge {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--teal);
+  background: var(--teal-dim);
+  padding: 1px 6px;
+  border-radius: var(--radius);
+  letter-spacing: 0.04em;
+}
+
+.alert-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.alert-conf {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-ack {
+  background: var(--teal-dim);
+  border: 1px solid var(--teal);
+  border-radius: var(--radius);
+  color: var(--teal);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition);
+}
+.btn-ack:hover {
+  background: var(--teal);
+  color: var(--bg-base);
+}
+
+.btn-note {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 11px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition);
+}
+.btn-note:hover, .btn-note.active {
+  border-color: var(--teal);
+  background: var(--teal-dim);
+}
+
+/* Doctor's note display */
+.alert-doctor-note {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: rgba(0, 181, 164, 0.04);
+  border: 1px solid rgba(0, 181, 164, 0.12);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+.note-label {
+  font-weight: 500;
+  color: var(--teal);
+  margin-right: 4px;
+}
+
+/* Note editor */
+.alert-note-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 10px;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color var(--transition);
+}
+.note-input:focus {
+  border-color: var(--teal);
+}
+.note-input::placeholder { color: var(--text-muted); }
+
+.note-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-save-note {
+  background: transparent;
+  border: 1px solid var(--teal);
+  border-radius: var(--radius);
+  color: var(--teal);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 7px 14px;
+  transition: background var(--transition);
+}
+.btn-save-note:hover:not(:disabled) {
+  background: var(--teal-dim);
+}
+.btn-save-note:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-cancel-note {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 7px 14px;
+  transition: border-color var(--transition), color var(--transition);
+}
+.btn-cancel-note:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.alert-empty {
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+  padding: 24px;
+}
+
+/* ── Location Panel ───────────────────────────────── */
+.location-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.location-coords {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.coord-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.coord-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.coord-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--teal);
+}
+.coord-value.no-data {
+  color: var(--text-muted);
+  font-style: italic;
+  font-family: inherit;
+}
+
+.location-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-maps {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--teal);
+  border-radius: var(--radius);
+  color: var(--teal);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 14px;
+  text-decoration: none;
+  text-align: center;
+  transition: background var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-maps:hover {
+  background: var(--teal-dim);
+}
+.btn-maps.disabled {
+  border-color: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.btn-copy {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 8px 14px;
+  transition: border-color var(--transition), color var(--transition);
+}
+.btn-copy:hover { border-color: var(--teal); color: var(--teal); }
+.btn-copy.copied { border-color: var(--green); color: var(--green); }
+
+.location-last-seen {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Recharts overrides ───────────────────────────── */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  font-size: 12px !important;
+  color: var(--text-primary) !important;
+}
+.recharts-text {
+  fill: var(--text-muted) !important;
+  font-size: 10px !important;
+}
+
+/* ── Animations ───────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 960px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .grid-ecg        { grid-column: 1 / 3; }
+  .grid-hr         { grid-column: 1; }
+  .grid-prediction { grid-column: 2; }
+  .grid-trend      { grid-column: 1 / 3; }
+  .grid-alerts     { grid-column: 1 / 3; }
+  .grid-location   { grid-column: 1 / 3; }
+
+  .sidebar { display: none; }
+}
+
+@media (max-width: 520px) {
+  .dashboard { padding: 12px 12px 24px; }
+  .navbar { padding: 0 16px; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .grid-ecg, .grid-hr, .grid-prediction,
+  .grid-trend, .grid-alerts, .grid-location { grid-column: 1; }
+  .hr-value { font-size: 36px; }
+}
