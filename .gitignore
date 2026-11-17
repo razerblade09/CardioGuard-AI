@@ -59,6 +59,7 @@ firmware/**/config.h
 *.docx
 *.pdf
 !docs/cardioGuard_Schematic.pdf
+!docs/cardioGuard_PCB_3D.png
 proposal/
 presentation*.html
 presentation_script*
@@ -76,3 +77,4 @@ docs/*
 !docs/block_diagram.png
 !docs/block_diagram.svg
 !docs/cardioGuard_Schematic.pdf
+!docs/cardioGuard_PCB_3D.png
