@@ -38,7 +38,7 @@ Accuracy is reported under an **inter-patient (by-record) split** — no patient
 
 The device samples at **500 Hz** and transmits **256-sample (512 ms)** windows. The server stabilises predictions with a **majority vote over the last 10 windows** and estimates heart rate from R-peaks accumulated over a rolling 5-second buffer. An alert fires only when confidence exceeds **0.85** and the per-device **300-second cooldown** has elapsed.
 
-See [`docs/system_flowchart.png`](docs/system_flowchart.png) for the full operational flow.
+See [`docs/system_flowchart.png`](docs/system_flowchart.png) for the full operational flow and [`docs/cardioGuard_Schematic.pdf`](docs/cardioGuard_Schematic.pdf) for the complete hardware circuit schematic.
 
 ---
 

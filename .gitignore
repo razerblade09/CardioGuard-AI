@@ -58,6 +58,7 @@ firmware/**/config.h
 # Thesis documentation, drafts, presentations & defense materials (Confidential)
 *.docx
 *.pdf
+!docs/cardioGuard_Schematic.pdf
 proposal/
 presentation*.html
 presentation_script*
@@ -74,3 +75,4 @@ docs/*
 !docs/system_flowchart.svg
 !docs/block_diagram.png
 !docs/block_diagram.svg
+!docs/cardioGuard_Schematic.pdf
