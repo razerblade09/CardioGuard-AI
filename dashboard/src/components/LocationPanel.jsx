@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, set } from 'firebase/database';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 
 function fmtTime(ts) {
   if (!ts) return 'N/A';
@@ -59,10 +59,16 @@ export default function LocationPanel({ lat, lng, timestamp, patientId, patientN
     try {
       // Direct POST request to FastAPI backend dispatch endpoint
       const apiUrl = import.meta.env.VITE_CLOUD_API_URL || 'https://cardioguard-api-production-c451.up.railway.app';
+      // The API verifies this Firebase ID token to confirm a signed-in doctor is asking.
+      const user = auth.currentUser;
+      if (!user) throw new Error('You must be signed in to dispatch an ambulance');
+      const token = await user.getIdToken();
+
       const response = await fetch(`${apiUrl}/dispatch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           patient_id: patientId,
