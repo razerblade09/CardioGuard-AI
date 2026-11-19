@@ -37,7 +37,7 @@ ALERT_THRESHOLD    = float(os.getenv("ALERT_THRESHOLD", "0.85"))
 ALERT_COOLDOWN_S   = int(os.getenv("ALERT_COOLDOWN_S", "300"))   # 5 minutes
 
 # Authentication (see "Authentication" section below)
-DEVICE_API_KEY          = os.getenv("DEVICE_API_KEY", "")   # shared secret for ESP32 -> /analyze
+DEVICE_KEY              = os.getenv("DEVICE_KEY", "")       # shared secret for ESP32 -> /analyze (same value as DEVICE_KEY in firmware config.h)
 DISPATCH_ALLOWED_EMAILS = {                                  # optional doctor allowlist for /dispatch
     e.strip().lower() for e in os.getenv("DISPATCH_ALLOWED_EMAILS", "").split(",") if e.strip()
 }
@@ -297,20 +297,21 @@ async def maybe_send_alert(patient_id: str, prediction: str, confidence: float,
     return True
 
 # ─── Authentication ───────────────────────────────────────────────────────────
-# /analyze  : ESP32 devices send a shared secret in the "X-API-Key" header.
+# /analyze  : ESP32 devices send a shared secret in the "X-Device-Key" header
+#             (the firmware already does this, using DEVICE_KEY from config.h).
 # /dispatch : doctors send their Firebase ID token as "Authorization: Bearer <token>".
 #             A shared key would be readable in the dashboard's JavaScript, so
 #             the token is verified server-side instead.
 # (Plain `def` dependencies run in FastAPI's threadpool, so the blocking
 #  token verification does not stall the event loop.)
-if not DEVICE_API_KEY:
-    log.warning("DEVICE_API_KEY is not set — /analyze is UNAUTHENTICATED. "
-                "Set it once your devices send the X-API-Key header.")
+if not DEVICE_KEY:
+    log.warning("DEVICE_KEY is not set — /analyze is UNAUTHENTICATED. "
+                "Set DEVICE_KEY to the value in your devices' config.h.")
 
-def require_device_key(x_api_key: str | None = Header(default=None)) -> None:
-    if not DEVICE_API_KEY:
-        return   # not configured yet: lets existing devices keep working during rollout
-    if not x_api_key or not secrets.compare_digest(x_api_key.encode(), DEVICE_API_KEY.encode()):
+def require_device_key(x_device_key: str | None = Header(default=None)) -> None:
+    if not DEVICE_KEY:
+        return   # not configured yet: keeps /analyze working until the env var is set
+    if not x_device_key or not secrets.compare_digest(x_device_key.encode(), DEVICE_KEY.encode()):
         raise HTTPException(status_code=401, detail="Invalid or missing API key")
 
 def require_doctor(authorization: str | None = Header(default=None)) -> dict:
