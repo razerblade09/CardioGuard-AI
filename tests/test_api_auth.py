@@ -42,26 +42,26 @@ def firebase_ready(monkeypatch):
     monkeypatch.setattr(cloud_api, "firebase_auth", FakeFirebaseAuth())
 
 
-# ─── /analyze: device API key ─────────────────────────────────────────────────
+# ─── /analyze: device key ─────────────────────────────────────────────────
 def test_analyze_open_when_key_not_configured(client, ecg_payload, monkeypatch):
-    monkeypatch.setattr(cloud_api, "DEVICE_API_KEY", "")
+    monkeypatch.setattr(cloud_api, "DEVICE_KEY", "")
     assert client.post("/analyze", json=ecg_payload).status_code == 200
 
 
 def test_analyze_rejects_missing_key(client, ecg_payload, monkeypatch):
-    monkeypatch.setattr(cloud_api, "DEVICE_API_KEY", "s3cret")
+    monkeypatch.setattr(cloud_api, "DEVICE_KEY", "s3cret")
     assert client.post("/analyze", json=ecg_payload).status_code == 401
 
 
 def test_analyze_rejects_wrong_key(client, ecg_payload, monkeypatch):
-    monkeypatch.setattr(cloud_api, "DEVICE_API_KEY", "s3cret")
-    r = client.post("/analyze", json=ecg_payload, headers={"X-API-Key": "nope"})
+    monkeypatch.setattr(cloud_api, "DEVICE_KEY", "s3cret")
+    r = client.post("/analyze", json=ecg_payload, headers={"X-Device-Key": "nope"})
     assert r.status_code == 401
 
 
 def test_analyze_accepts_correct_key(client, ecg_payload, monkeypatch):
-    monkeypatch.setattr(cloud_api, "DEVICE_API_KEY", "s3cret")
-    r = client.post("/analyze", json=ecg_payload, headers={"X-API-Key": "s3cret"})
+    monkeypatch.setattr(cloud_api, "DEVICE_KEY", "s3cret")
+    r = client.post("/analyze", json=ecg_payload, headers={"X-Device-Key": "s3cret"})
     assert r.status_code == 200
     assert r.json()["prediction"] in cloud_api.CLASS_NAMES
 
