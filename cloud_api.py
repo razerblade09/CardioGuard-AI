@@ -15,11 +15,12 @@ Deploy to cloud:
 
 import os
 import time
+import secrets
 import logging
 from datetime import datetime, timezone
 
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
 import onnxruntime as ort
@@ -35,6 +36,12 @@ TELEGRAM_TOKEN     = os.getenv("TELEGRAM_TOKEN",     "")   # your bot token
 ALERT_THRESHOLD    = float(os.getenv("ALERT_THRESHOLD", "0.85"))
 ALERT_COOLDOWN_S   = int(os.getenv("ALERT_COOLDOWN_S", "300"))   # 5 minutes
 
+# Authentication (see "Authentication" section below)
+DEVICE_API_KEY          = os.getenv("DEVICE_API_KEY", "")   # shared secret for ESP32 -> /analyze
+DISPATCH_ALLOWED_EMAILS = {                                  # optional doctor allowlist for /dispatch
+    e.strip().lower() for e in os.getenv("DISPATCH_ALLOWED_EMAILS", "").split(",") if e.strip()
+}
+
 CLASS_NAMES = ["Normal", "Arrhythmia", "At-Risk"]
 
 # ─── Load ONNX model (once on startup, not per request) ───────────────────────
@@ -48,10 +55,11 @@ log.info("ONNX model loaded ✓")
 
 # ─── Firebase setup (supports both file and env var credentials) ──────────────
 firebase_db = None
+firebase_auth = None
 try:
     import json as _json
     import firebase_admin
-    from firebase_admin import credentials, db as firebase_db_module
+    from firebase_admin import credentials, db as firebase_db_module, auth as firebase_auth
 
     # No hardcoded default: falling back to a specific project silently sends
     # data to the wrong database (or a deleted one) whenever the variable is
@@ -288,6 +296,38 @@ async def maybe_send_alert(patient_id: str, prediction: str, confidence: float,
 
     return True
 
+# ─── Authentication ───────────────────────────────────────────────────────────
+# /analyze  : ESP32 devices send a shared secret in the "X-API-Key" header.
+# /dispatch : doctors send their Firebase ID token as "Authorization: Bearer <token>".
+#             A shared key would be readable in the dashboard's JavaScript, so
+#             the token is verified server-side instead.
+# (Plain `def` dependencies run in FastAPI's threadpool, so the blocking
+#  token verification does not stall the event loop.)
+if not DEVICE_API_KEY:
+    log.warning("DEVICE_API_KEY is not set — /analyze is UNAUTHENTICATED. "
+                "Set it once your devices send the X-API-Key header.")
+
+def require_device_key(x_api_key: str | None = Header(default=None)) -> None:
+    if not DEVICE_API_KEY:
+        return   # not configured yet: lets existing devices keep working during rollout
+    if not x_api_key or not secrets.compare_digest(x_api_key.encode(), DEVICE_API_KEY.encode()):
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+
+def require_doctor(authorization: str | None = Header(default=None)) -> dict:
+    if firebase_db is None or firebase_auth is None:
+        # Cannot verify anyone, so refuse rather than let the request through.
+        raise HTTPException(status_code=503, detail="Authentication service unavailable")
+    scheme, _, token = (authorization or "").partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        raise HTTPException(status_code=401, detail="Missing bearer token")
+    try:
+        claims = firebase_auth.verify_id_token(token)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    if DISPATCH_ALLOWED_EMAILS and (claims.get("email") or "").lower() not in DISPATCH_ALLOWED_EMAILS:
+        raise HTTPException(status_code=403, detail="Not authorized to dispatch")
+    return claims
+
 # ─── Routes ───────────────────────────────────────────────────────────────────
 @app.get("/")
 def root():
@@ -298,7 +338,7 @@ def health():
     return {"status": "ok", "model": ONNX_MODEL_PATH}
 
 @app.post("/dispatch")
-async def dispatch_ambulance(payload: DispatchPayload):
+async def dispatch_ambulance(payload: DispatchPayload, doctor: dict = Depends(require_doctor)):
     # Construct a gorgeous Telegram alert for the ambulance!
     maps_url = f"https://maps.google.com/?q={payload.lat},{payload.lng}"
     
@@ -360,7 +400,7 @@ async def dispatch_ambulance(payload: DispatchPayload):
 
 
 @app.post("/analyze", response_model=PredictionResponse)
-async def analyze(payload: ECGPayload):
+async def analyze(payload: ECGPayload, _auth: None = Depends(require_device_key)):
     t_start = time.perf_counter()
 
     # 1. Preprocess
